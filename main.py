@@ -43,7 +43,12 @@ if len(list_albedo) > 0:
     if list_albedo[0].replace("\\","/").split('/')[-1].split('.')[0] == list_albedo[1].replace("\\","/").split('/')[-1].split('.')[0]:
         print('ALBEDO MATCH')
         file = list_albedo[0].replace("\\","/")
-        file.split('/')[-1].split('.')[1] = "UDIM"
+        tmp = ""
+        tmp += file.split('/')[:-1]
+        tmp += file.split('/')[-1].split('.')[0] + "."
+        tmp += '<UDIM>.'
+        tmp += file.split('/')[-1].split('.')[2]
+        file = tmp
         list_albedo = [file]
 
 print('----')
