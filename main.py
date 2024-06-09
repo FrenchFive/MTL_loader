@@ -44,7 +44,7 @@ if len(list_albedo) > 0:
         print('ALBEDO MATCH')
         file = list_albedo[0].replace("\\","/")
         tmp = ""
-        tmp += file.split('/')[:-1]
+        tmp += "/".join(file.split('/')[:-1]) + "/"
         tmp += file.split('/')[-1].split('.')[0] + "."
         tmp += '<UDIM>.'
         tmp += file.split('/')[-1].split('.')[2]
