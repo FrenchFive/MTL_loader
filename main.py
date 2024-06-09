@@ -42,5 +42,9 @@ for dirpath, dirnames, filenames in os.walk(directory):
 if len(list_albedo) > 0:
     if list_albedo[0].replace("\\","/").split('/')[-1].split('.')[0] == list_albedo[1].replace("\\","/").split('/')[-1].split('.')[0]:
         print('ALBEDO MATCH')
+        file = list_albedo[0].replace("\\","/")
+        file.split('/')[-1].split('.')[1] = "UDIM"
+        list_albedo = [file]
 
 print('----')
+print(list_albedo)
