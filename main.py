@@ -38,15 +38,9 @@ for dirpath, dirnames, filenames in os.walk(directory):
             if word in filename:
                 print(f'{os.path.join(dirpath, filename)} :: HEIGHT')
                 list_height.append(os.path.join(dirpath, filename))
-    
-#for each element in the list albedo, check if the others elements have the same name following the pattern [name]_[number].[extension]
+
 if len(list_albedo) > 0:
-    for i in list_albedo:
-        index = list_albedo.index(i)
-        actual_fn = list_albedo[index].split('/')[-1].split(".")[0]
-        next_fn = list_albedo[index+1].split('/')[-1].split(".")[0]
-        if actual_fn == next_fn:
-            #delete next_fn from the list
-            list_albedo.pop(i+1)
+    if list_albedo[0].replace("\\","/").split('/')[-1].split('.')[0] == list_albedo[1].replace("\\","/").split('/')[-1].split('.')[0]:
+        print('ALBEDO MATCH')
 
 print('----')
