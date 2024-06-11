@@ -6,10 +6,10 @@ import re
 conn = sqlite3.connect('file_info.db')
 c = conn.cursor()
 
-# Create table
+# Create table with directory column
 c.execute('''
     CREATE TABLE IF NOT EXISTS files
-    (path TEXT, filename TEXT, name TEXT, type TEXT, udim TEXT, extension TEXT, UDIMS BOOLEAN DEFAULT FALSE)
+    (directory TEXT, filename TEXT, name TEXT, type TEXT, udim TEXT, extension TEXT, UDIMS BOOLEAN DEFAULT FALSE)
 ''')
 
 # Define directory to start from
@@ -29,7 +29,7 @@ type_dict = {
 for dirpath, dirnames, filenames in os.walk(start_dir):
     for filename in filenames:
         # Get full path
-        full_path = os.path.join(dirpath, filename)
+        directory = dirpath
 
         # Get extension
         extension = os.path.splitext(filename)[1][1:]
@@ -56,9 +56,9 @@ for dirpath, dirnames, filenames in os.walk(start_dir):
 
         # Insert into database
         c.execute('''
-            INSERT INTO files (path, filename, name, type, udim, extension, UDIMS)
+            INSERT INTO files (directory, filename, name, type, udim, extension, UDIMS)
             VALUES (?, ?, ?, ?, ?, ?, ?)
-        ''', (full_path, filename, name, type, udim, extension, False))
+        ''', (directory, filename, name, type, udim, extension, False))
 
 # Commit changes and close connection
 conn.commit()
@@ -67,9 +67,9 @@ conn.commit()
 # Create a temporary table
 c.execute('''
     CREATE TEMPORARY TABLE temp_files AS
-    SELECT path, filename, name, type, udim, extension, COUNT(*) as count
+    SELECT directory, filename, name, type, udim, extension, COUNT(*) as count
     FROM files
-    GROUP BY name, type
+    GROUP BY directory, name, type, extension
 ''')
 
 # Clear the original table
@@ -77,8 +77,8 @@ c.execute('DELETE FROM files')
 
 # Insert the merged entries into the original table
 c.execute('''
-    INSERT INTO files (path, filename, name, type, udim, extension, UDIMS)
-    SELECT path, filename, name, type, udim, extension, count > 1
+    INSERT INTO files (directory, filename, name, type, udim, extension, UDIMS)
+    SELECT directory, filename, name, type, udim, extension, count > 1
     FROM temp_files
 ''')
 
@@ -86,11 +86,9 @@ c.execute('''
 conn.commit()
 
 # Query for distinct names
-c.execute('SELECT DISTINCT name FROM files')
+c.execute('SELECT * FROM files')
 unique_names = c.fetchall()
 
-# Convert list of tuples to list of strings
-unique_names = [name[0] for name in unique_names]
 
 # Print or export the list
 print(unique_names)
